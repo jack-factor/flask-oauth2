@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify
 from app.models import User, Client, Grant, Token
 from app import db, oauth
 from datetime import datetime, timedelta
@@ -84,6 +84,19 @@ def get_user(username, password, *args, **kwargs):
 @mod_oauth.route('/index', methods=['GET', 'POST'])
 def index():
     return "Hello world"
+
+
+@mod_oauth.route('/me', methods=['POST'])
+@oauth.require_oauth()
+def me():
+    user = request.oauth.user
+    result = {'email': user.email,
+              'name': user.name,
+              'lastname': user.lastname,
+              'document': user.document,
+              'celphone': user.celphone,
+              'telephone': user.telephone}
+    return jsonify(result)
 
 
 @mod_oauth.route('/token', methods=['GET', 'POST'])
